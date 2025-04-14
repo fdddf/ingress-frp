@@ -4,6 +4,8 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"strings"
+
 	"github.com/grydovee/ingress-frp/pkg/constants"
 	"github.com/grydovee/ingress-frp/pkg/frp"
 	corev1 "k8s.io/api/core/v1"
@@ -21,7 +23,6 @@ import (
 	"sigs.k8s.io/controller-runtime/pkg/predicate"
 	"sigs.k8s.io/controller-runtime/pkg/reconcile"
 	"sigs.k8s.io/controller-runtime/pkg/source"
-	"strings"
 )
 
 type FrpIngressReconciler struct {
@@ -100,7 +101,7 @@ func (r *FrpIngressReconciler) Reconcile(ctx context.Context, req ctrl.Request) 
 				cfg.Host = rule.Host
 				cfg.LocalIp = svcToDomain(&svc)
 				cfg.Locations = path.Path
-				name := fmt.Sprintf("%s/%s/%s", ingress.Namespace, ingress.Name, svc.Name)
+				name := fmt.Sprintf("%s/%s/%s:%s", ingress.Namespace, ingress.Name, svc.Name, path.Path)
 				if h, ok := ingress.Annotations[constants.AnnotationHostHeaderRewrite]; ok {
 					cfg.HostHeaderRewrite = h
 				}
